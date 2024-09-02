@@ -1,5 +1,6 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
+  import { t, locale, locales } from "$lib/i18n";
   import Tailwindcss from "./svgs/tailwindcss.svelte";
   import SvelteIcon from "./svgs/svelte.svelte";
   import JavaScript from "./svgs/javascript.svelte";
@@ -16,6 +17,7 @@
   import Mysql from "./svgs/mysql.svelte";
   import Mariadb from "./svgs/mariadb.svelte";
   import Lua from "./svgs/lua.svelte";
+  import LanguageSelector from "./LanguageSelector.svelte";
   import { onMount } from "svelte";
 
   let scrollY = 0;
@@ -28,8 +30,6 @@
   let line16 = 16;
   let line17 = 17;
 
-  const freezeLines = [2, 3, 12, 13, 14];
-
   const elements = [Html, SvelteIcon, Tailwindcss, JavaScript];
 
   const handleScroll = () => {
@@ -37,10 +37,6 @@
     const newVisibleLine = Math.min(20, Math.floor(scrollY / 500) + 1);
     if (newVisibleLine !== visibleLine) {
       visibleLine = newVisibleLine;
-      console.log(visibleLine);
-      if (freezeLines.includes(visibleLine)) {
-        disableScroll();
-      }
     }
     fadeInTechnologyContainer = scrollY > window.innerHeight;
   };
@@ -55,9 +51,9 @@
   const calculateVisibleLines = (width: number) => {
     if (width < 768) {
       // Mobile
-      line15 = 17;
-      line16 = 18;
-      line17 = 19;
+      line15 = 18;
+      line16 = 19;
+      line17 = 20;
     } else if (width >= 768 && width < 1024) {
       // Tablet
       line15 = 13;
@@ -65,9 +61,9 @@
       line17 = 15;
     } else {
       // Desktop
-      line15 = 12;
-      line16 = 13;
-      line17 = 14;
+      line15 = 13;
+      line16 = 14;
+      line17 = 15;
     }
   };
 
@@ -87,101 +83,94 @@
     };
   });
 
-  const experiences = [
+  const experiencesBase = [
     {
       title: "Web Developer Intern",
       company: "Daffys E-Shop",
       location: "Thessaloniki, Greece",
       date: "August 2021 - January 2022",
-      description:
-        "Worked on front-end development, utilizing HTML, CSS, and JavaScript to build responsive websites. Collaborated with other developers to improve user interfaces and enhance user experience.",
+      descriptionKey: "experience.web_developer_intern.description",
     },
     {
       title: "Greek Military Duty",
-      company: "Greek Goverment",
+      company: "Greek Government",
       location: "Limnos, Greece",
       date: "May 2022 - January 2023",
-      description:
-        "I have fulfilled my military service obligations to my country.",
+      descriptionKey: "experience.military_duty.description",
     },
     {
       title: "Web Developer",
       company: "Freelancing",
       location: "Thessaloniki, Greece",
-      date: "Martch 2023 - Octomber 2023",
-      description:
-        "I have collaborated with private clients to transform their web application concepts into reality, utilizing raw HTML, CSS, and JavaScript for the front-end, and Node.js for the back-end. Due to non-disclosure agreements, I am unable to share specific code or client names.",
+      date: "March 2023 - October 2023",
+      descriptionKey: "experience.web_developer.description",
     },
     {
       title: "Full Stack Web Developer - Software Engineer",
       company: "Infomax Insurance Brokers",
       location: "Thessaloniki, Greece",
-      date: "Octomber 2023 - Today",
-      description:
-        "I am currently employed as a software engineer at Infomax, where I've had the opportunity to work with cutting-edge technologies like SvelteKit, TailwindCSS, and PHP Laravel. This role has allowed me to deepen my expertise in Svelte and experience firsthand what it’s like to be part of a dynamic team that prioritizes innovation and continuous improvement in application development.",
+      date: "October 2023 - Today",
+      descriptionKey: "experience.full_stack_developer.description",
+    },
+    {
+      title: "Gaming Servers Operator",
+      company: "Gaming Multiverse",
+      location: "",
+      date: "February 2017 - Today",
+      descriptionKey: "experience.gaming_servers_operator.description",
     },
   ];
 
-  const skills = [
+  const skillsBase = [
     {
       icon: Lua,
       title: "Lua",
-      description:
-        "Advanced in Lua programming, specializing in developing robust and efficient scripts for games.",
+      descriptionKey: "skill.lua.description",
     },
     {
       icon: SvelteIcon,
       title: "SvelteKit",
-      description:
-        "Advanced experience in building modern, reactive web applications using SvelteKit.",
+      descriptionKey: "skill.sveltekit.description",
     },
     {
       icon: Tailwindcss,
       title: "TailwindCSS",
-      description:
-        "Proficient in crafting responsive and visually appealing UI using TailwindCSS.",
+      descriptionKey: "skill.tailwindcss.description",
     },
     {
       icon: JavaScript,
       title: "JavaScript",
-      description:
-        "Extensive experience in building interactive front-end applications with JavaScript.",
+      descriptionKey: "skill.javascript.description",
     },
     {
       icon: Nodejs,
       title: "Node.js",
-      description:
-        "Strong proficiency in server-side development using Node.js.",
+      descriptionKey: "skill.nodejs.description",
     },
     {
       icon: { component: Html, secondaryComponent: Css },
       title: "HTML & CSS",
-      description:
-        "Expert in building and styling web pages using HTML5 and CSS3.",
+      descriptionKey: "skill.html_css.description",
     },
     {
       icon: Linux,
       title: "Unix Systems",
-      description:
-        "Extensive experience in managing and maintaining Ubuntu-based Linux systems.",
+      descriptionKey: "skill.unix_systems.description",
     },
     {
       icon: { component: Mariadb, secondaryComponent: Mysql },
       title: "MariaDB & MySQL",
-      description:
-        "Extensive experience in managing and maintaining MariaDB & Mysql Instances.",
+      descriptionKey: "skill.mariadb_mysql.description",
     },
     {
       icon: Laravel,
       title: "PHP Laravel",
-      description:
-        "intermediate in developing back-end systems with Laravel and PHP.",
+      descriptionKey: "skill.php_laravel.description",
     },
     {
       icon: Email,
       title: "Email System",
-      description:
-        "intermediate in creating mailcow docker instances to use for emails.",
+      descriptionKey: "skill.email_system.description",
     },
   ];
 
@@ -211,7 +200,19 @@
       link: null,
     },
   ];
+
+  $: experiences = experiencesBase.map((exp) => ({
+    ...exp,
+    description: $t(exp.descriptionKey),
+  }));
+
+  $: skills = skillsBase.map((skill) => ({
+    ...skill,
+    description: $t(skill.descriptionKey),
+  }));
 </script>
+
+<LanguageSelector />
 
 <div class="">
   <div class="min-h-screen flex flex-col items-center justify-center">
@@ -222,7 +223,7 @@
           class:opacity-0={visibleLine !== 1}
           class:opacity-100={visibleLine === 1}
         >
-          Hello! 👋
+          {$t("homepage.hello")}! 👋
         </h1>
 
         <h2
@@ -230,7 +231,7 @@
           class:opacity-0={visibleLine !== 2}
           class:opacity-100={visibleLine === 2}
         >
-          Welcome to my website! 💻
+          {$t("homepage.welcome")}! 💻
         </h2>
 
         <h3
@@ -238,7 +239,7 @@
           class:opacity-0={visibleLine !== 3}
           class:opacity-100={visibleLine === 3}
         >
-          I'm Pantelis and I'm a Full Stack web developer 🚀
+          {$t("homepage.intro")} 🚀
         </h3>
       </div>
     </div>
@@ -260,7 +261,7 @@
       in:fade={{ duration: 2000 }}
     >
       <h2 class="text-lg text-center text-[#0B2447]">
-        I have built this website with the latest technologies in mind
+        {$t("homepage.builtinfo")}
       </h2>
 
       <div class="flex pt-4 space-x-4">
@@ -279,34 +280,18 @@
   <div
     class="text-[#576CBC] text-center items-center flex flex-col justify-center pt-28 pb-28 lg:px-96"
   >
-    <h3 class="text-[#A5D7E8]">Let me introduce myself.</h3>
+    <h3 class="text-[#A5D7E8]">{$t("homepage.introduction")}</h3>
     <p class="pt-6 mx-7">
-      My full name is Panteleimon Xanthos, and I was born in April of 2001 in
-      Greece.
+      {$t("homepage.introductionOne")}
       <br />
       <br />
-      From a young age, I’ve always been drawn to technology, especially computers.
-      This early interest led me to discover the world of programming, where I quickly
-      found joy in solving problems and coming up with innovative solutions. As I
-      continued to learn and grow, I specialized in web development, combining technical
-      skills with creativity to build dynamic, engaging websites. Whether it’s front-end
-      or back-end logic, I’m passionate about every aspect of web development and
-      always eager to learn new technologies and improve my skills.
+      {$t("homepage.introductionTwo")}
       <br />
       <br />
-      Beyond programming, I have a deep love for gaming. Gaming has been a long-time
-      hobby that not only provides entertainment but also sparks inspiration. It’s
-      the perfect way to unwind and often serves as a great source of ideas for my
-      work in technology and design. Whether I’m diving into an immersive RPG or
-      competing in a fast-paced shooter, gaming plays a significant role in my life,
-      complementing my passion for tech and creativity.
+      {$t("homepage.introductionThree")}
       <br />
       <br />
-      I’m also passionate about traveling, as it gives me the opportunity to experience
-      different cultures and broaden my horizons. So far, I’ve visited the UK, Italy,
-      Bulgaria, North Macedonia, Austria, and Hungary. Of all the places I’ve been,
-      Hungary stands out as my favorite destination. Looking ahead, my goal is to
-      travel to the USA, where I’m excited to explore new places and experiences.
+      {$t("homepage.introductionFour")}
     </p>
   </div>
 
@@ -314,7 +299,7 @@
     class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
   >
     <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      My experience so far
+      {$t("homepage.experience")}
     </h2>
   </div>
 
@@ -339,12 +324,12 @@
     class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
   >
     <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      My Skill Set
+      {$t("homepage.skill")}
     </h2>
   </div>
 
   <div
-    class="mx-7 my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pt-20 pb-20 lg:px-96"
+    class="mx-7 my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-20 pb-20 lg:px-96"
   >
     {#each skills as skill}
       <div
@@ -375,7 +360,7 @@
           class:opacity-0={visibleLine !== line15}
           class:opacity-100={visibleLine === line15}
         >
-          Like what you saw? 😎
+          {$t("homepage.like")} 😎
         </h1>
 
         <h2
@@ -383,7 +368,7 @@
           class:opacity-0={visibleLine !== line16}
           class:opacity-100={visibleLine === line16}
         >
-          Feel free to contact me for any questions or offers! 📸
+          {$t("homepage.contactme")}! 📸
         </h2>
 
         <h3
@@ -391,7 +376,7 @@
           class:opacity-0={visibleLine !== line17}
           class:opacity-100={visibleLine === line17}
         >
-          Bellow you are going to find my social links and my contact info! 👌
+          {$t("homepage.findmysocials")}! 👌
         </h3>
       </div>
     </div>
@@ -411,7 +396,7 @@
     class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
   >
     <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      My Contact Info
+      {$t("homepage.mycontactinfo")}
     </h2>
   </div>
 
