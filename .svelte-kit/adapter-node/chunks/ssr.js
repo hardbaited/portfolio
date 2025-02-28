@@ -25,11 +25,19 @@ function subscribe(store, ...callbacks) {
   const unsub = store.subscribe(...callbacks);
   return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
 }
+function get_store_value(store) {
+  let value;
+  subscribe(store, (_) => value = _)();
+  return value;
+}
 function compute_rest_props(props, keys) {
   const rest = {};
   keys = new Set(keys);
   for (const k in props) if (!keys.has(k) && k[0] !== "$") rest[k] = props[k];
   return rest;
+}
+function null_to_empty(value) {
+  return value == null ? "" : value;
 }
 let current_component;
 function set_current_component(component) {
@@ -38,6 +46,9 @@ function set_current_component(component) {
 function get_current_component() {
   if (!current_component) throw new Error("Function called outside component initialization");
   return current_component;
+}
+function onDestroy(fn) {
+  get_current_component().$$.on_destroy.push(fn);
 }
 function setContext(key, context) {
   get_current_component().$$.context.set(key, context);
@@ -229,20 +240,25 @@ function style_object_to_string(style_object) {
 }
 export {
   subscribe as a,
-  compute_rest_props as b,
+  set_current_component as b,
   create_ssr_component as c,
-  spread as d,
+  current_component as d,
   escape as e,
-  escape_attribute_value as f,
+  compute_rest_props as f,
   getContext as g,
-  escape_object as h,
-  each as i,
-  add_attribute as j,
-  safe_not_equal as k,
-  is_function as l,
+  spread as h,
+  escape_attribute_value as i,
+  escape_object as j,
+  each as k,
+  add_attribute as l,
   missing_component as m,
-  noop as n,
+  get_store_value as n,
+  onDestroy as o,
+  null_to_empty as p,
+  noop as q,
   run_all as r,
   setContext as s,
+  safe_not_equal as t,
+  is_function as u,
   validate_component as v
 };

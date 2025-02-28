@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
+  // @ts-nocheck
+  import { fade, slide } from "svelte/transition";
   import { t, locale, locales } from "$lib/i18n";
   import Tailwindcss from "./svgs/tailwindcss.svelte";
   import SvelteIcon from "./svgs/svelte.svelte";
@@ -12,84 +13,58 @@
   import Linkedin from "./svgs/linkedin.svelte";
   import Github from "./svgs/github.svelte";
   import Location from "./svgs/location.svelte";
-  import ArrowDown from "./svgs/ArrowDown.svelte";
   import Linux from "./svgs/linux.svelte";
   import Mysql from "./svgs/mysql.svelte";
   import Mariadb from "./svgs/mariadb.svelte";
   import Lua from "./svgs/lua.svelte";
   import LanguageSelector from "./LanguageSelector.svelte";
   import { onMount } from "svelte";
+  import BoxReveal from "./BoxReveal.svelte";
+  import BlurIn from "./BlurIn.svelte";
+  import WordsFadeIn from "./WordsFadeIn.svelte";
+  import SlideTab from "./SlideTab.svelte";
+  import { Menu, MoveUp, ChevronsDown } from "lucide-svelte";
+  import Particles from "./Particles.svelte";
 
   let scrollY = 0;
-  let visibleLine = 1;
-  let fadeInTechnologyContainer = false;
-  let activeIndex = -1;
-  const cycleInterval = 2000;
-  let interval: number | undefined;
-  let line15 = 15;
-  let line16 = 16;
-  let line17 = 17;
+  let activeSection = "home";
+  let showBackToTop = false;
+  let menuOpen = false;
 
-  const elements = [Html, SvelteIcon, Tailwindcss, JavaScript];
+  const toggleMenu = () => {
+    menuOpen = !menuOpen;
+  };
 
   const handleScroll = () => {
     scrollY = window.scrollY;
-    const newVisibleLine = Math.min(20, Math.floor(scrollY / 500) + 1);
-    if (newVisibleLine !== visibleLine) {
-      visibleLine = newVisibleLine;
-    }
-    fadeInTechnologyContainer = scrollY > window.innerHeight;
+    showBackToTop = scrollY > 300;
+    const sections = ["home", "about", "experience", "skills", "contact"];
+    const sectionOffsets = sections.map((id) => ({
+      id,
+      offset: document.getElementById(id)?.offsetTop || 0,
+    }));
+    const current = sectionOffsets.find(
+      (sec) => scrollY >= sec.offset - 100 && scrollY < sec.offset + 600
+    );
+    activeSection = current?.id || "home";
   };
 
-  const disableScroll = () => {
-    document.body.style.overflow = "hidden";
-    setTimeout(() => {
-      document.body.style.overflow = "";
-    }, 1000);
-  };
-
-  const calculateVisibleLines = (width: number) => {
-    if (width < 768) {
-      // Mobile
-      line15 = 18;
-      line16 = 19;
-      line17 = 20;
-    } else if (width >= 768 && width < 1024) {
-      // Tablet
-      line15 = 13;
-      line16 = 14;
-      line17 = 15;
-    } else {
-      // Desktop
-      line15 = 13;
-      line16 = 14;
-      line17 = 15;
-    }
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   onMount(() => {
     window.addEventListener("scroll", handleScroll);
-    calculateVisibleLines(window.innerWidth);
-
-    if (window.innerWidth <= 768) {
-      interval = setInterval(() => {
-        activeIndex = (activeIndex + 1) % elements.length;
-      }, cycleInterval);
-    }
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      clearInterval(interval);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   });
 
   const experiencesBase = [
     {
-      title: "Web Developer Intern",
+      title: "E-shop maintainer",
       company: "Daffys E-Shop",
       location: "Thessaloniki, Greece",
       date: "August 2021 - January 2022",
-      descriptionKey: "experience.web_developer_intern.description",
+      descriptionKey: "experience.eshop_maintainer.description",
     },
     {
       title: "Greek Military Duty",
@@ -106,7 +81,7 @@
       descriptionKey: "experience.web_developer.description",
     },
     {
-      title: "Full Stack Web Developer - Software Engineer",
+      title: "Full Stack Web Developer",
       company: "Infomax Insurance Brokers",
       location: "Thessaloniki, Greece",
       date: "October 2023 - Today",
@@ -122,11 +97,7 @@
   ];
 
   const skillsBase = [
-    {
-      icon: Lua,
-      title: "Lua",
-      descriptionKey: "skill.lua.description",
-    },
+    { icon: Lua, title: "Lua", descriptionKey: "skill.lua.description" },
     {
       icon: SvelteIcon,
       title: "SvelteKit",
@@ -193,12 +164,7 @@
       detail: "github.com/hardbaited",
       link: "https://github.com/hardbaited",
     },
-    {
-      icon: Location,
-      title: "Location",
-      detail: "Greece",
-      link: null,
-    },
+    { icon: Location, title: "Location", detail: "Greece", link: null },
   ];
 
   $: experiences = experiencesBase.map((exp) => ({
@@ -212,219 +178,280 @@
   }));
 </script>
 
-<LanguageSelector />
+<svelte:head>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
+    rel="stylesheet"
+  />
+</svelte:head>
 
-<div class="">
-  <div class="min-h-screen flex flex-col items-center justify-center">
-    <div class="sticky top-0 w-full h-screen flex items-center justify-center">
-      <div class="w-full relative">
+<div
+  class="font-poppins min-h-screen bg-gradient-to-br from-blue-900 via-teal-700 to-blue-600 text-white transition-colors duration-500 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"
+>
+  <!-- Navigation -->
+  <nav
+    class="fixed top-0 w-full bg-blue-800 dark:bg-gray-800/80 shadow-lg z-20 backdrop-blur-md"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-center items-center"
+    >
+      <button
+        class="sm:hidden text-teal-300 focus:outline-none"
+        on:click={toggleMenu}
+      >
+        {#if menuOpen}✕{:else}<Menu />{/if}
+      </button>
+      <SlideTab />
+      <LanguageSelector />
+      {#if menuOpen}
+        <div
+          class="absolute top-full left-0 w-full bg-blue-800 dark:bg-gray-800/90 flex flex-col items-center space-y-4 py-4 sm:hidden"
+          in:slide
+        >
+          {#each ["home", "about", "experience", "skills", "contact"] as section}
+            <a
+              href={`#${section}`}
+              class="text-teal-100 hover:text-teal-300 transition-all duration-300 {activeSection ===
+              section
+                ? 'font-bold text-teal-300'
+                : ''}"
+              on:click={toggleMenu}
+            >
+              {$t(`nav.${section}`)}
+            </a>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section
+    id="home"
+    class="min-h-screen relative overflow-hidden flex flex-col justify-center items-center py-16 sm:py-24"
+  >
+    <Particles className="absolute inset-0" refresh={true} />
+    <div class="text-center z-10 px-4 sm:px-6 flex flex-col items-center">
+      <BoxReveal boxColor={"#14B8A6"} duration={0.6}>
         <h1
-          class="absolute inset-0 flex items-center justify-center text-2xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== 1}
-          class:opacity-100={visibleLine === 1}
+          class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-teal-300 drop-shadow-lg"
         >
-          {$t("homepage.hello")}! 👋
+          {$t("homepage.hello")}
         </h1>
-
-        <h2
-          class="absolute inset-0 flex items-center justify-center text-3xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== 2}
-          class:opacity-100={visibleLine === 2}
+      </BoxReveal>
+      <BoxReveal boxColor={"#14B8A6"} duration={0.8}>
+        <span
+          class="mt-4 sm:mt-6 text-lg sm:text-xl md:text-2xl text-white opacity-90"
+          >Full-Stack Web Developer</span
         >
-          {$t("homepage.welcome")}! 💻
-        </h2>
-
-        <h3
-          class="absolute inset-0 flex items-center justify-center text-3xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== 3}
-          class:opacity-100={visibleLine === 3}
+      </BoxReveal>
+      <BoxReveal boxColor={"#14B8A6"} duration={1.2}>
+        <a
+          href="#contact"
+          class="mt-6 sm:mt-8 inline-block bg-teal-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-lg hover:bg-teal-600 transition-transform duration-300 text-sm sm:text-base"
         >
-          {$t("homepage.intro")} 🚀
-        </h3>
-      </div>
+          {$t("homepage.contactme")}
+        </a>
+      </BoxReveal>
     </div>
 
-    {#if visibleLine === 1}
-      <div
-        class="sticky bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-      >
-        <ArrowDown class="w-12 h-12 animate-bounce text-[#576CBC]" />
-        <p class="text-[#576CBC] text-sm mt-2">Scroll down</p>
-      </div>
-    {/if}
-    <div class="h-[130vh]"></div>
-  </div>
-
-  {#if fadeInTechnologyContainer}
+    <!-- ChevronDown with Scroll Down Text -->
     <div
-      class="bg-[#576CBC] h-96 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
-      in:fade={{ duration: 2000 }}
+      class="absolute bottom-6 transform -translate-x-1/2 text-teal-300 z-10 flex flex-col items-center animate-bounce"
     >
-      <h2 class="text-lg text-center text-[#0B2447]">
-        {$t("homepage.builtinfo")}
-      </h2>
+      <span class="text-sm sm:text-base mb-2">Scroll Down</span>
+      <ChevronsDown class="w-8 h-8 sm:w-10 sm:h-10" />
+    </div>
+  </section>
 
-      <div class="flex pt-4 space-x-4">
-        {#each elements as Element, index}
+  <!-- About Section -->
+  <section
+    id="about"
+    class="py-16 sm:py-24 bg-opacity-90 bg-blue-800 dark:bg-gray-800 relative"
+  >
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <BlurIn
+        word={$t("homepage.introduction")}
+        class="text-3xl sm:text-4xl font-bold text-teal-300 drop-shadow-md"
+      />
+      <div
+        class="mt-8 sm:mt-12 space-y-6 text-base sm:text-lg leading-relaxed text-white opacity-90"
+      >
+        <p in:slide>{$t("homepage.introductionOne")}</p>
+        <p in:slide={{ delay: 200 }}>{$t("homepage.introductionTwo")}</p>
+        <p in:slide={{ delay: 400 }}>{$t("homepage.introductionThree")}</p>
+      </div>
+      <a
+        href="/cv.pdf"
+        download
+        class="mt-8 sm:mt-10 inline-block bg-white text-blue-900 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold shadow-lg hover:bg-teal-100 hover:scale-105 transition-transform duration-300 text-sm sm:text-base"
+      >
+        {$t("homepage.viewMyCV")}
+      </a>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section
+    id="experience"
+    class="relative py-16 sm:py-24 bg-gradient-to-br from-teal-700 to-blue-900 dark:from-gray-800 dark:to-gray-900"
+  >
+    <Particles className="absolute inset-0 z-0" refresh={true} />
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <WordsFadeIn
+        words={$t("homepage.experience")}
+        class="text-3xl sm:text-4xl font-bold text-center text-teal-300 drop-shadow-md"
+      />
+      <div class="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        {#each experiences as exp, i}
           <div
-            class="transition-transform transform duration-300 hover:scale-125"
-            class:scale-125={activeIndex === index && window.innerWidth <= 768}
+            class="bg-blue-800 dark:bg-gray-700 p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 z-10"
+            in:slide={{ delay: i * 150 }}
           >
-            <Element class="w-12 h-12" />
+            <h3 class="text-xl sm:text-2xl font-semibold text-teal-300">
+              {exp.title}
+            </h3>
+            <p class="text-white opacity-80 text-sm sm:text-base">
+              {exp.company}, {exp.location}
+            </p>
+            <p class="text-teal-100 mt-2 text-sm sm:text-base">{exp.date}</p>
+            <p class="mt-4 text-white opacity-90 text-sm sm:text-base">
+              {exp.description}
+            </p>
           </div>
         {/each}
       </div>
     </div>
-  {/if}
+  </section>
 
-  <div
-    class="text-[#576CBC] text-center items-center flex flex-col justify-center pt-28 pb-28 lg:px-96"
-  >
-    <h3 class="text-[#A5D7E8]">{$t("homepage.introduction")}</h3>
-    <p class="pt-6 mx-7">
-      {$t("homepage.introductionOne")}
-      <br />
-      <br />
-      {$t("homepage.introductionTwo")}
-      <br />
-      <br />
-      {$t("homepage.introductionThree")}
-      <br />
-      <br />
-      {$t("homepage.introductionFour")}
-    </p>
-  </div>
-
-  <div
-    class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
-  >
-    <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      {$t("homepage.experience")}
-    </h2>
-  </div>
-
-  <div
-    class="mx-7 my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 pt-20 pb-20 lg:px-96"
-  >
-    {#each experiences as experiences}
+  <!-- Skills Section -->
+  <section id="skills" class="py-16 sm:py-24 bg-blue-800 dark:bg-gray-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <BlurIn
+        word={$t("homepage.skill")}
+        class="text-3xl sm:text-4xl font-bold text-center text-teal-300 drop-shadow-md"
+      />
       <div
-        class="bg-white shadow-lg shadow-[#576CBC] rounded-lg p-6 lg:hover:scale-110 transition"
+        class="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
       >
-        <h3 class="text-[#0B2447] text-xl font-bold">{experiences.title}</h3>
-        <p class="text-[#576CBC] font-semibold">
-          {experiences.company}, {experiences.location}
-        </p>
-        <p class="text-gray-600 mt-2">{experiences.date}</p>
-        <p class="text-gray-700 mt-4">{experiences.description}</p>
-      </div>
-    {/each}
-  </div>
-
-  <div
-    class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
-  >
-    <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      {$t("homepage.skill")}
-    </h2>
-  </div>
-
-  <div
-    class="mx-7 my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-20 pb-20 lg:px-96"
-  >
-    {#each skills as skill}
-      <div
-        class="bg-white shadow-lg shadow-[#576CBC] rounded-lg p-6 flex flex-col items-center text-center lg:hover:scale-110 transition"
-      >
-        {#if skill.icon.secondaryComponent}
-          <div class="flex justify-center items-center">
-            <svelte:component this={skill.icon.component} class="w-12 h-12" />
-            <svelte:component
-              this={skill.icon.secondaryComponent}
-              class="w-11 h-11"
-            />
+        {#each skills as skill}
+          <div
+            class="bg-teal-900 dark:bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center text-center"
+            in:fade={{ delay: skills.indexOf(skill) * 100 }}
+          >
+            {#if skill.icon.secondaryComponent}
+              <div class="flex space-x-2 sm:space-x-4">
+                <svelte:component
+                  this={skill.icon.component}
+                  class="w-10 h-10 sm:w-12 sm:h-12 text-teal-300"
+                />
+                <svelte:component
+                  this={skill.icon.secondaryComponent}
+                  class="w-10 h-10 sm:w-12 sm:h-12 text-teal-300"
+                />
+              </div>
+            {:else}
+              <svelte:component
+                this={skill.icon}
+                class="w-10 h-10 sm:w-12 sm:h-12 text-teal-300"
+              />
+            {/if}
+            <h3 class="mt-4 text-lg sm:text-xl font-semibold text-teal-300">
+              {skill.title}
+            </h3>
+            <p class="mt-2 text-white opacity-90 text-sm sm:text-base">
+              {skill.description}
+            </p>
           </div>
-        {:else}
-          <svelte:component this={skill.icon} class="w-12 h-12" />
-        {/if}
-        <h3 class="text-[#0B2447] text-xl font-bold">{skill.title}</h3>
-        <p class="text-gray-700 mt-2">{skill.description}</p>
-      </div>
-    {/each}
-  </div>
-
-  <div class="min-h-screen flex flex-col items-center justify-center">
-    <div class="sticky top-0 w-full h-screen flex items-center justify-center">
-      <div class="w-full relative">
-        <h1
-          class="absolute inset-0 flex items-center justify-center text-2xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== line15}
-          class:opacity-100={visibleLine === line15}
-        >
-          {$t("homepage.like")} 😎
-        </h1>
-
-        <h2
-          class="absolute inset-0 flex items-center justify-center text-3xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== line16}
-          class:opacity-100={visibleLine === line16}
-        >
-          {$t("homepage.contactme")}! 📸
-        </h2>
-
-        <h3
-          class="absolute inset-0 flex items-center justify-center text-3xl text-[#576CBC] transition-opacity duration-500 text-center"
-          class:opacity-0={visibleLine !== line17}
-          class:opacity-100={visibleLine === line17}
-        >
-          {$t("homepage.findmysocials")}! 👌
-        </h3>
+        {/each}
       </div>
     </div>
+  </section>
 
-    {#if visibleLine === line15}
-      <div
-        class="sticky bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-      >
-        <ArrowDown class="w-12 h-12 animate-bounce text-[#576CBC]" />
-        <p class="text-[#576CBC] text-sm mt-2">Scroll</p>
-      </div>
-    {/if}
-    <div class="h-[130vh]"></div>
-  </div>
-
-  <div
-    class="bg-[#576CBC] h-44 shadow-lg shadow-[#19376D] flex flex-col justify-center items-center"
+  <!-- Contact Section -->
+  <section
+    id="contact"
+    class="relative py-16 sm:py-24 bg-gradient-to-br from-blue-900 to-teal-700 dark:from-gray-900 dark:to-gray-800"
   >
-    <h2 class="text-center text-[#0B2447] text-3xl font-semibold">
-      {$t("homepage.mycontactinfo")}
-    </h2>
-  </div>
-
-  <div class="flex w-full justify-center">
-    <div class="mx-7 my-10 space-y-6 pt-16 pb-16 lg:w-[25rem] md:w-[29rem]">
-      {#each contactInfo as info}
-        <div
-          class="bg-white shadow-md rounded-lg p-6 flex items-center gap-4 lg:hover:scale-110 transition"
-        >
-          <svelte:component this={info.icon} class="w-12 h-12" />
-          <div>
-            <h3 class="text-[#0B2447] text-xl font-bold">{info.title}</h3>
-            {#if info.link}
-              <p class="text-gray-700">
+    <Particles
+      className="absolute inset-0 pointer-events-none z-0"
+      refresh={true}
+    />
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+      <div class="text-3xl sm:text-4xl font-bold text-teal-300 drop-shadow-md">
+        {$t("homepage.mycontactinfo")}
+      </div>
+      <div class="mt-8 sm:mt-12 space-y-6 sm:space-y-8">
+        {#each contactInfo as info}
+          <div
+            class="bg-blue-800 dark:bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-4 sm:gap-6 z-10 relative"
+            in:fade={{ delay: contactInfo.indexOf(info) * 100 }}
+          >
+            <svelte:component
+              this={info.icon}
+              class="w-10 h-10 sm:w-12 sm:h-12 text-teal-300"
+            />
+            <div class="text-left">
+              <h3 class="text-base sm:text-lg font-semibold text-teal-300">
+                {info.title}
+              </h3>
+              {#if info.link}
                 <a
                   href={info.link}
                   target="_blank"
-                  class="text-[#576CBC] underline"
+                  class="text-white hover:text-teal-300 transition text-sm sm:text-base"
                 >
                   {info.detail}
                 </a>
-              </p>
-            {:else}
-              <p class="text-gray-700 select-text">{info.detail}</p>
-            {/if}
+              {:else}
+                <p
+                  class="text-white opacity-90 text-sm sm:text-base select-text"
+                >
+                  {info.detail}
+                </p>
+              {/if}
+            </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Back to Top Button -->
+  {#if showBackToTop}
+    <button
+      on:click={scrollToTop}
+      class="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 bg-teal-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-teal-600 transition-all duration-300 text-sm sm:text-base"
+      in:fade
+    >
+      <MoveUp />
+    </button>
+  {/if}
+
+  <!-- Footer -->
+  <footer class="py-6 sm:py-8 bg-blue-900 dark:bg-gray-900 text-center">
+    <p class="text-teal-300 opacity-80 text-sm sm:text-base">
+      Make web developing great again.
+    </p>
+  </footer>
 </div>
+
+<style>
+  :global(body) {
+    font-family: "Poppins", sans-serif;
+    scroll-behavior: smooth;
+  }
+  :global(.bg-pattern) {
+    background-size: 150px 150px;
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    );
+  }
+  @media (max-width: 640px) {
+    :global(.bg-pattern) {
+      background-size: 100px 100px;
+    }
+  }
+</style>

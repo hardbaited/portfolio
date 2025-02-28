@@ -1,4 +1,4 @@
-import { n as noop, a as subscribe, r as run_all, k as safe_not_equal, l as is_function } from "./ssr.js";
+import { q as noop, a as subscribe, r as run_all, t as safe_not_equal, u as is_function } from "./ssr.js";
 const subscriber_queue = [];
 function readable(value, start) {
   return {
