@@ -30,6 +30,7 @@ declare module '$env/static/private' {
 	export const AMDRMPATH: string;
 	export const APPDATA: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
+	export const CLAUDE_CODE_SSE_PORT: string;
 	export const COLORTERM: string;
 	export const CommonProgramFiles: string;
 	export const CommonProgramW6432: string;
@@ -44,6 +45,8 @@ declare module '$env/static/private' {
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
+	export const GK_GL_ADDR: string;
+	export const GK_GL_PATH: string;
 	export const HOMEDRIVE: string;
 	export const HOMEPATH: string;
 	export const LANG: string;
@@ -133,6 +136,7 @@ declare module '$env/dynamic/private' {
 		AMDRMPATH: string;
 		APPDATA: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
+		CLAUDE_CODE_SSE_PORT: string;
 		COLORTERM: string;
 		CommonProgramFiles: string;
 		CommonProgramW6432: string;
@@ -147,6 +151,8 @@ declare module '$env/dynamic/private' {
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
+		GK_GL_ADDR: string;
+		GK_GL_PATH: string;
 		HOMEDRIVE: string;
 		HOMEPATH: string;
 		LANG: string;

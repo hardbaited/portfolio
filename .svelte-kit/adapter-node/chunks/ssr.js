@@ -9,9 +9,6 @@ function blank_object() {
 function run_all(fns) {
   fns.forEach(run);
 }
-function is_function(thing) {
-  return typeof thing === "function";
-}
 function safe_not_equal(a, b) {
   return a != a ? b == b : a !== b || a && typeof a === "object" || typeof a === "function";
 }
@@ -25,19 +22,11 @@ function subscribe(store, ...callbacks) {
   const unsub = store.subscribe(...callbacks);
   return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
 }
-function get_store_value(store) {
-  let value;
-  subscribe(store, (_) => value = _)();
-  return value;
-}
 function compute_rest_props(props, keys) {
   const rest = {};
   keys = new Set(keys);
   for (const k in props) if (!keys.has(k) && k[0] !== "$") rest[k] = props[k];
   return rest;
-}
-function null_to_empty(value) {
-  return value == null ? "" : value;
 }
 let current_component;
 function set_current_component(component) {
@@ -46,9 +35,6 @@ function set_current_component(component) {
 function get_current_component() {
   if (!current_component) throw new Error("Function called outside component initialization");
   return current_component;
-}
-function onDestroy(fn) {
-  get_current_component().$$.on_destroy.push(fn);
 }
 function setContext(key, context) {
   get_current_component().$$.context.set(key, context);
@@ -239,26 +225,19 @@ function style_object_to_string(style_object) {
   return Object.keys(style_object).filter((key) => style_object[key] != null && style_object[key] !== "").map((key) => `${key}: ${escape_attribute_value(style_object[key])};`).join(" ");
 }
 export {
-  subscribe as a,
-  set_current_component as b,
+  setContext as a,
+  subscribe as b,
   create_ssr_component as c,
-  current_component as d,
+  compute_rest_props as d,
   escape as e,
-  compute_rest_props as f,
+  spread as f,
   getContext as g,
-  spread as h,
+  escape_object as h,
   escape_attribute_value as i,
-  escape_object as j,
-  each as k,
-  add_attribute as l,
+  each as j,
+  add_attribute as k,
   missing_component as m,
-  get_store_value as n,
-  onDestroy as o,
-  null_to_empty as p,
-  noop as q,
-  run_all as r,
-  setContext as s,
-  safe_not_equal as t,
-  is_function as u,
+  noop as n,
+  safe_not_equal as s,
   validate_component as v
 };

@@ -12,13 +12,6 @@
     "file": "chunks/exports.js",
     "name": "exports"
   },
-  "_index.js": {
-    "file": "chunks/index.js",
-    "name": "index",
-    "imports": [
-      "_ssr.js"
-    ]
-  },
   "_internal.js": {
     "file": "chunks/internal.js",
     "name": "internal",
@@ -57,7 +50,7 @@
     "imports": [
       "_internal.js",
       "_exports.js",
-      "_index.js"
+      "_ssr.js"
     ]
   },
   "src/routes/+page.svelte": {
@@ -66,11 +59,10 @@
     "src": "src/routes/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_ssr.js",
-      "_index.js"
+      "_ssr.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DNBBzQkS.css"
+      "_app/immutable/assets/_page.DfA7qBMh.css"
     ]
   }
 }

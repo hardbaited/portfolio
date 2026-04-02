@@ -1,6 +1,5 @@
-import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from './chunks/ssr-f-OIMpPX.js';
+import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component, n as noop, a as safe_not_equal } from './chunks/ssr-BOIJSraT.js';
 import { d as decode_pathname, h as has_data_suffix, s as strip_data_suffix, a as decode_params, n as normalize_path, b as disable_search, c as add_data_suffix, m as make_trackable, r as resolve } from './chunks/exports-BGi7-Rnc.js';
-import { r as readable, w as writable } from './chunks/index-ByVaiTI8.js';
 
 let base = "";
 let assets = base;
@@ -103,7 +102,14 @@ const options = {
   root: Root,
   service_worker: false,
   templates: {
-    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\r\n<html lang="en">\r\n	<head>\r\n		<meta charset="utf-8" />\r\n		<link rel="icon" href="' + assets2 + '/favicon.ico" />\r\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\r\n		<title>Pantelis Xanthos - Full Stack Web Developer</title>\r\n		<meta name="description" content="Pantelis Xanthos is a Full Stack Web Developer with expertise in SvelteKit, TailwindCSS, JavaScript, and more. Discover his work and connect with him today.">\r\n		<meta name="keywords" content="Pantelis Xanthos, Full Stack Web Developer, SvelteKit, TailwindCSS, JavaScript, Web Development, Greece">\r\n		<meta property="og:title" content="Pantelis Xanthos - Full Stack Web Developer" />\r\n		<meta property="og:description" content="Discover the work of Pantelis Xanthos, a Full Stack Web Developer specializing in modern web technologies." />\r\n		<meta property="og:image" content="' + assets2 + '/favicon.png" />\r\n		<meta property="og:url" content="https://pantelisxanthos.gr" />\r\n\r\n		' + head + '\r\n	</head>\r\n	<body data-sveltekit-preload-data="hover">\r\n		<div style="display: contents">' + body + '</div>\r\n	</body>\r\n\r\n	<script type="application/ld+json">\r\n		{\r\n		  "@context": "https://schema.org",\r\n		  "@type": "Person",\r\n		  "name": "Pantelis Xanthos",\r\n		  "jobTitle": "Full Stack Web Developer",\r\n		  "url": "https://pantelisxanthos.gr",\r\n		  "sameAs": [\r\n			"https://www.linkedin.com/in/PantelisXanthos",\r\n			"https://github.com/hardbaited"\r\n		  ],\r\n		  "worksFor": {\r\n			"@type": "Organization",\r\n			"name": "Infomax Insurance Brokers"\r\n		  }\r\n		}\r\n	  <\/script>\r\n</html>\r\n',
+    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\r\n<html lang="en">\r\n	<head>\r\n		<meta charset="utf-8" />\r\n		<link rel="icon" href="' + assets2 + `/favicon.ico" />\r
+		<meta name="viewport" content="width=device-width, initial-scale=1" />\r
+		<title>Pantelis Xanthos - Full Stack Web Developer/IT Engineer</title>\r
+		<meta name="description" content="Hi! I'm Pantelis Xanthos a Full Stack Web Developer and an IT Engineer i specialize in SvelteKit, TailwindCSS, JavaScript, and more. Discover my work throw my website.">\r
+		<meta name="keywords" content="Pantelis Xanthos, Full Stack Web Developer, IT Engineer, SvelteKit, TailwindCSS, JavaScript, Web Development, Greece">\r
+		<meta property="og:title" content="Pantelis Xanthos - Full Stack Web Developer" />\r
+		<meta property="og:description" content="Discover the work of Pantelis Xanthos, a Full Stack Web Developer specializing in modern web technologies." />\r
+		<meta property="og:image" content="` + assets2 + '/favicon.png" />\r\n		<meta property="og:url" content="https://pantelisxanthos.gr" />\r\n\r\n		' + head + '\r\n	</head>\r\n	<body data-sveltekit-preload-data="hover">\r\n		<div style="display: contents">' + body + '</div>\r\n	</body>\r\n\r\n	<script type="application/ld+json">\r\n		{\r\n		  "@context": "https://schema.org",\r\n		  "@type": "Person",\r\n		  "name": "Pantelis Xanthos",\r\n		  "jobTitle": "Full Stack Web Developer",\r\n		  "url": "https://pantelisxanthos.gr",\r\n		  "sameAs": [\r\n			"https://www.linkedin.com/in/PantelisXanthos",\r\n			"https://github.com/hardbaited"\r\n		  ],\r\n		  "worksFor": {\r\n			"@type": "Organization",\r\n			"name": "Infomax Insurance Brokers"\r\n		  }\r\n		}\r\n	  <\/script>\r\n</html>\r\n',
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -175,7 +181,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "10krmno"
+  version_hash: "u8e449"
 };
 async function get_hooks() {
   return {};
@@ -2049,6 +2055,53 @@ async function stream_to_string(stream) {
     result += decoder.decode(value);
   }
   return result;
+}
+const subscriber_queue = [];
+function readable(value, start) {
+  return {
+    subscribe: writable(value, start).subscribe
+  };
+}
+function writable(value, start = noop) {
+  let stop;
+  const subscribers = /* @__PURE__ */ new Set();
+  function set(new_value) {
+    if (safe_not_equal(value, new_value)) {
+      value = new_value;
+      if (stop) {
+        const run_queue = !subscriber_queue.length;
+        for (const subscriber of subscribers) {
+          subscriber[1]();
+          subscriber_queue.push(subscriber, value);
+        }
+        if (run_queue) {
+          for (let i = 0; i < subscriber_queue.length; i += 2) {
+            subscriber_queue[i][0](subscriber_queue[i + 1]);
+          }
+          subscriber_queue.length = 0;
+        }
+      }
+    }
+  }
+  function update(fn) {
+    set(fn(value));
+  }
+  function subscribe(run, invalidate = noop) {
+    const subscriber = [run, invalidate];
+    subscribers.add(subscriber);
+    if (subscribers.size === 1) {
+      stop = start(set, update) || noop;
+    }
+    run(value);
+    return () => {
+      subscribers.delete(subscriber);
+      if (subscribers.size === 0 && stop) {
+        stop();
+        stop = null;
+      }
+    };
+  }
+  return { set, update, subscribe };
 }
 function hash(...values) {
   let hash2 = 5381;

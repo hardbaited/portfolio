@@ -1,4 +1,4 @@
-import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from "./ssr.js";
+import { c as create_ssr_component, a as setContext, v as validate_component, m as missing_component } from "./ssr.js";
 let base = "";
 let assets = base;
 const initial = { base, assets };
@@ -115,7 +115,14 @@ const options = {
   root: Root,
   service_worker: false,
   templates: {
-    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\r\n<html lang="en">\r\n	<head>\r\n		<meta charset="utf-8" />\r\n		<link rel="icon" href="' + assets2 + '/favicon.ico" />\r\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\r\n		<title>Pantelis Xanthos - Full Stack Web Developer</title>\r\n		<meta name="description" content="Pantelis Xanthos is a Full Stack Web Developer with expertise in SvelteKit, TailwindCSS, JavaScript, and more. Discover his work and connect with him today.">\r\n		<meta name="keywords" content="Pantelis Xanthos, Full Stack Web Developer, SvelteKit, TailwindCSS, JavaScript, Web Development, Greece">\r\n		<meta property="og:title" content="Pantelis Xanthos - Full Stack Web Developer" />\r\n		<meta property="og:description" content="Discover the work of Pantelis Xanthos, a Full Stack Web Developer specializing in modern web technologies." />\r\n		<meta property="og:image" content="' + assets2 + '/favicon.png" />\r\n		<meta property="og:url" content="https://pantelisxanthos.gr" />\r\n\r\n		' + head + '\r\n	</head>\r\n	<body data-sveltekit-preload-data="hover">\r\n		<div style="display: contents">' + body + '</div>\r\n	</body>\r\n\r\n	<script type="application/ld+json">\r\n		{\r\n		  "@context": "https://schema.org",\r\n		  "@type": "Person",\r\n		  "name": "Pantelis Xanthos",\r\n		  "jobTitle": "Full Stack Web Developer",\r\n		  "url": "https://pantelisxanthos.gr",\r\n		  "sameAs": [\r\n			"https://www.linkedin.com/in/PantelisXanthos",\r\n			"https://github.com/hardbaited"\r\n		  ],\r\n		  "worksFor": {\r\n			"@type": "Organization",\r\n			"name": "Infomax Insurance Brokers"\r\n		  }\r\n		}\r\n	  <\/script>\r\n</html>\r\n',
+    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\r\n<html lang="en">\r\n	<head>\r\n		<meta charset="utf-8" />\r\n		<link rel="icon" href="' + assets2 + `/favicon.ico" />\r
+		<meta name="viewport" content="width=device-width, initial-scale=1" />\r
+		<title>Pantelis Xanthos - Full Stack Web Developer/IT Engineer</title>\r
+		<meta name="description" content="Hi! I'm Pantelis Xanthos a Full Stack Web Developer and an IT Engineer i specialize in SvelteKit, TailwindCSS, JavaScript, and more. Discover my work throw my website.">\r
+		<meta name="keywords" content="Pantelis Xanthos, Full Stack Web Developer, IT Engineer, SvelteKit, TailwindCSS, JavaScript, Web Development, Greece">\r
+		<meta property="og:title" content="Pantelis Xanthos - Full Stack Web Developer" />\r
+		<meta property="og:description" content="Discover the work of Pantelis Xanthos, a Full Stack Web Developer specializing in modern web technologies." />\r
+		<meta property="og:image" content="` + assets2 + '/favicon.png" />\r\n		<meta property="og:url" content="https://pantelisxanthos.gr" />\r\n\r\n		' + head + '\r\n	</head>\r\n	<body data-sveltekit-preload-data="hover">\r\n		<div style="display: contents">' + body + '</div>\r\n	</body>\r\n\r\n	<script type="application/ld+json">\r\n		{\r\n		  "@context": "https://schema.org",\r\n		  "@type": "Person",\r\n		  "name": "Pantelis Xanthos",\r\n		  "jobTitle": "Full Stack Web Developer",\r\n		  "url": "https://pantelisxanthos.gr",\r\n		  "sameAs": [\r\n			"https://www.linkedin.com/in/PantelisXanthos",\r\n			"https://github.com/hardbaited"\r\n		  ],\r\n		  "worksFor": {\r\n			"@type": "Organization",\r\n			"name": "Infomax Insurance Brokers"\r\n		  }\r\n		}\r\n	  <\/script>\r\n</html>\r\n',
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -187,7 +194,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "10krmno"
+  version_hash: "u8e449"
 };
 async function get_hooks() {
   return {};
