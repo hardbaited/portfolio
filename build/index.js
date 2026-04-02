@@ -232,7 +232,7 @@ function polka (opts) {
 
 const path = env('SOCKET_PATH', false);
 const host = env('HOST', '0.0.0.0');
-const port = env('PORT', !path && '4000');
+const port = env('PORT', !path && '3002');
 
 const shutdown_timeout = parseInt(env('SHUTDOWN_TIMEOUT', '30'));
 const idle_timeout = parseInt(env('IDLE_TIMEOUT', '0'));
